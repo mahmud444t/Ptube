@@ -61,6 +61,8 @@ const videoApi = async (category_id, sort = false) => {
     const videosData = data.data;
     //fethcing finished
 
+
+
     if (sort) {
 
         videosData.sort((a, b) => {
@@ -76,39 +78,34 @@ const videoApi = async (category_id, sort = false) => {
 
 
 const showCategoryVideos = (videosData) => {
-
-
     if (videosData.length === 0) {
         document.getElementById('error-element').classList.remove('hidden');
-    }
-    else {
+    } else {
         document.getElementById('error-element').classList.add('hidden');
     }
-
 
     const cardContainer = document.getElementById('card-container');
     cardContainer.innerHTML = '';
     videosData.forEach(videoData => {
+        if (videoData.others && videoData.others.posted_date && videoData.others.posted_date.trim() !== '') {
+            const totalMinutes = parseInt(videoData.others.posted_date);
+            const days = Math.floor(totalMinutes / (60 * 24));
+            const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+            const durationString = `${days} days ${hours} hours`;
 
+            const video = document.createElement('div');
 
-        const video = document.createElement('div');
+            let verified = '';
+            if (videoData.authors[0].verified) {
+                verified = `<img class="w-6 h-6" src="./images/verify.png" alt=""></img>`;
+            }
 
-        // if verified adding verified sign
-
-        let verified = '';
-        if (videoData.authors[0].verified) {
-            verified = `<img class="w-6 h-6" src="./images/verify.png" alt=""></img>`;
-
-        }
-
-        // adding videos
-
-
-        video.innerHTML = `
-        <div class="card w-full bg-base-100 shadow-xl">
+            // adding videos
+            video.innerHTML = `
+            <div class="card w-full bg-base-100 shadow-xl">
                 <figure class="overflow-hidden h-72">
                     <img class="w-full" src="${videoData.thumbnail}" alt="Shoes" />
-                    <h6 class="absolute bottom-[40%] right-12">0 hr</h6>
+                    <h6 class="absolute bottom-[40%] text-white right-12">${durationString}</h6>
                 </figure>
                 <div class="card-body">
                     <div class="flex space-x-4 justify-start items-start">
@@ -120,19 +117,40 @@ const showCategoryVideos = (videosData) => {
                             <div class="flex mt-3">
                                 <p class="">${videoData.authors[0].profile_name}</p>
                                 ${verified}
-                                
                             </div>
                             <p class="mt-3">${videoData.others?.views}</p>
                         </div>
                     </div>
                 </div>
             </div>
-        `;
+            `;
 
-        cardContainer.appendChild(video);
-
-
-
+            cardContainer.appendChild(video);
+        } else {
+            const video = document.createElement('div');
+            video.innerHTML = `
+            <div class="card w-full bg-base-100 shadow-xl">
+                <figure class="overflow-hidden h-72">
+                    <img class="w-full" src="${videoData.thumbnail}" alt="Shoes" />
+                </figure>
+                <div class="card-body">
+                    <div class="flex space-x-4 justify-start items-start">
+                        <div>
+                            <img class="w-12 h-12 rounded-full" src="${videoData.authors[0].profile_picture}" alt="Shoes" />
+                        </div>
+                        <div>
+                            <h2 class="card-title">${videoData.title}</h2>
+                            <div class="flex mt-3">
+                                <p class="">${videoData.authors[0].profile_name}</p>
+                            </div>
+                            <p class="mt-3">${videoData.others?.views}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+            cardContainer.appendChild(video);
+        }
     });
 };
 
