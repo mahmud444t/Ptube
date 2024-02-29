@@ -66,7 +66,6 @@ const videoApi = async (category_id, sort = false) => {
         videosData.sort((a, b) => {
             const viewsA = parseFloat(a.others?.views.replace("k", '')) || 0;
             const viewsB = parseFloat(b.others?.views.replace("k", '')) || 0;
-            console.log(viewsA, viewsB)
             return viewsB - viewsA;
         });
     }
